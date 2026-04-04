@@ -1,0 +1,17 @@
+[package]
+name = "bevy_0_18"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+resolver = "3"
+members = ["electron_sea"]
+
+[workspace.dependencies]
+bevy = "0.18.1"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
