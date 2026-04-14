@@ -1,25 +1,28 @@
 #import bevy_pbr::forward_io::VertexOutput
+#import bevy_pbr::mesh_view_bindings::globals
 
 @fragment
 fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
-    let emission_wave = in.color.r;
+    let noise_mask = in.color.r;
     let armor_mask = in.color.g;
 
-    let armor_color = vec3<f32>(0.3, 0.3, 0.3);
+    let armor_color = vec3<f32>(0.4, 0.4, 0.4);
     let groove_color = vec3<f32>(0.05, 0.05, 0.05);
     let base_color = mix(groove_color, armor_color, armor_mask);
 
+    let light_dir = normalize(vec3<f32>(0.8, 1.0, 0.5));
+    let shading = max(dot(in.world_normal, light_dir), 0.0) * 0.6 + 0.4;
+    let shaded_base = base_color * shading;
+
+    let wave_freq = 15.0;
+    let wave_speed = 3.0;
+    let scrolling_wave = sin(in.world_position.y * wave_freq - globals.time * wave_speed) * 0.5 + 0.5;
+
+    let is_groove = 1.0 - armor_mask;
+    let animate_pulse = scrolling_wave * noise_mask * is_groove;
+
     let glow_color = vec3<f32>(0.0, 0.8, 1.0);
-    let emissive = glow_color * emission_wave;
-    let surface_color = base_color + emissive;
+    let emissive = glow_color * animate_pulse * 3.0;
 
-    // Extract edge by thresholding the screen-space variance of normals
-    let normal_change = fwidth(in.world_normal);
-    let edge_intensity = length(normal_change);
-    let is_edge = step(0.01, edge_intensity);
-
-    let edge_color = vec3<f32>(1.0, 1.0, 1.0);
-    let final_color = mix(surface_color, edge_color, is_edge);
-
-    return vec4<f32>(final_color, 1.0);
+    return vec4<f32>(shaded_base + emissive, 1.0);
 }
