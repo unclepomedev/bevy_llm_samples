@@ -1,0 +1,7 @@
+[package]
+name = "import_3d_sandbox"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bevy = { workspace = true, features = ["bevy_gltf", "bevy_pbr", "bevy_scene"] }
