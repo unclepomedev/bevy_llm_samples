@@ -62,7 +62,7 @@ fn fire_input(
 ) {
     if mouse.just_pressed(MouseButton::Left) {
         for (entity, name, transform) in &query {
-            if name.as_str() == "barrel" {
+            if name.as_str() == "pitch" {
                 commands.entity(entity).insert(RecoilAnimation {
                     timer: 0.1,
                     start_z: transform.translation.z,
